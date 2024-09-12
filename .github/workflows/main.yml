@@ -1,0 +1,40 @@
+name: Setup Electron App for macOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup-project:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install create-electron-app
+        run: npm install -g create-electron-app
+
+      - name: Create Electron app with Webpack template
+        run: npx create-electron-app my-app --template=webpack
+
+      - name: List files in the new project
+        run: ls -R my-app
+
+      - name: Commit new project files
+        run: |
+          cd my-app
+          git config user.name 'github-actions'
+          git config user.email 'actions@github.com'
+          git add .
+          git commit -m "Setup Electron app with Webpack template"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
